@@ -10,12 +10,14 @@ bot = Bot(TOKEN)	# создаём объект бота с токеном
 dp = Dispatcher()	# создаём диспетчер (распределяет входящие обновления)
 
 async def ttdownl(text, messageid, date):
-    url = text
     ydl_opts = {
-    'outtmpl': f'{messageid}_{date}.%(ext)s',   # сохраняем файл как 'video.mp4' (расширение подставится)
-    'format': 'mp4',}              # просим выбрать формат mp4 (если доступен)
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+        'outtmpl': f'{messageid}_{date}.%(ext)s',   # сохраняем файл как 'video.mp4' (расширение подставится)
+        'format': 'mp4',                            # просим выбрать формат mp4 (если доступен)
+    }
+    def downs(url, ydl_opts):
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    await asyncio.to_thread(downs, text, ydl_opts)
 
 
 @dp.message(CommandStart())	# регистрируем хендлер на команду /start
