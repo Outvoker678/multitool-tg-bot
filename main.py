@@ -9,10 +9,10 @@ from aiogram import F
 bot = Bot(TOKEN)	# создаём объект бота с токеном
 dp = Dispatcher()	# создаём диспетчер (распределяет входящие обновления)
 
-async def ttdownl(text):
+async def ttdownl(text, messageid, date):
     url = text
     ydl_opts = {
-    'outtmpl': 'video.%(ext)s',   # сохраняем файл как 'video.mp4' (расширение подставится)
+    'outtmpl': f'{messageid}_{date}.%(ext)s',   # сохраняем файл как 'video.mp4' (расширение подставится)
     'format': 'mp4',}              # просим выбрать формат mp4 (если доступен)
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
@@ -29,9 +29,9 @@ async def cmd_start(message: Message):	# асинхронная функция-�
 async def downme(message: Message):	# асинхронная функция-обработчик
     if "tiktok.com" in message.text:
         await message.answer("🔗 Ссылка получена! Сейчас скачаю видео...")
-        await ttdownl(message.text)
-        await message.answer_video(video=FSInputFile("video.mp4"))        
-        os.remove("video.mp4")
+        await ttdownl(message.text, message.message_id, message.date)
+        await message.answer_video(video=FSInputFile(f"{message.message_id}_{message.date}.mp4"))        
+        os.remove(f"{message.message_id}_{message.date}.mp4")
         
     else:
         await message.answer("❗️Пожалуйста, отправь ссылку на TikTok-видео.")
